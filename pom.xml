@@ -1,0 +1,22 @@
+<dependencies>
+  <!-- Google Generative AI Java Client -->
+  <dependency>
+    <groupId>com.google.genai</groupId>
+    <artifactId>client</artifactId>
+    <version>latest-version</version> <!-- Replace with actual version -->
+  </dependency>
+
+  <!-- Guava (for ImmutableList, ImmutableMap) -->
+  <dependency>
+    <groupId>com.google.guava</groupId>
+    <artifactId>guava</artifactId>
+    <version>32.0.1-jre</version>
+  </dependency>
+
+  <!-- Gson (for JSON serialization) -->
+  <dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.10.1</version>
+  </dependency>
+</dependencies>
