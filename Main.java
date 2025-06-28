@@ -6,5 +6,7 @@ public class Main {
     
     public static void main(String[] args){
         hello();
+        //hoy
+        int x = 20;
     }
 }
