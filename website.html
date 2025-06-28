@@ -1,25 +1,98 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Simple Page</title>
-    <style>
-      body {
-        background-color: black;
-        color: gold;
-        text-align: center; /* center the banner and content */
-        font-family: Arial, sans-serif; /* clean font */
+<head>
+  <title>Dungeon Crawler Web</title>
+  <style>
+    body {
+      font-family: monospace;
+      background-color: #222;
+      color: #eee;
+      text-align: center;
+      margin-top: 30px;
+    }
+    #map {
+      display: inline-block;
+      margin: 20px auto;
+      line-height: 1.2;
+      font-size: 20px;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dungeon Crawler Web</h1>
+  <div id="map"></div>
+  <div>
+    <button onclick="movePlayer(0, -1)">W</button><br>
+    <button onclick="movePlayer(-1, 0)">A</button>
+    <button onclick="movePlayer(0, 1)">S</button>
+    <button onclick="movePlayer(1, 0)">D</button><br>
+    <button onclick="quitGame()">Q (Quit)</button>
+  </div>
+  <p id="message"></p>
+
+  <script>
+    const MAP_SIZE = 10;
+    let map = [];
+    let playerX, playerY;
+    let gameOver = false;
+
+    function initializeGame() {
+      map = [];
+      for(let i=0; i<MAP_SIZE; i++) {
+        map[i] = [];
+        for(let j=0; j<MAP_SIZE; j++) {
+          map[i][j] = '.';
+        }
       }
-      h1.banner {
-        font-size: 6rem; /* huge font size */
-        margin-top: 40px;
-        margin-bottom: 20px;
-        font-weight: bold;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      playerX = Math.floor(Math.random() * MAP_SIZE);
+      playerY = Math.floor(Math.random() * MAP_SIZE);
+      map[playerY][playerX] = 'P';
+      gameOver = false;
+      document.getElementById('message').textContent = '';
+      renderMap();
+    }
+
+    function renderMap() {
+      let mapDiv = document.getElementById('map');
+      let html = '';
+      for(let i=0; i<MAP_SIZE; i++) {
+        for(let j=0; j<MAP_SIZE; j++) {
+          html += map[i][j] + ' ';
+        }
+        html += '<br>';
       }
-    </style>
-  </head>
-  <body>
-    <h1 class="banner">Dungeon Crawler</h1>
-    <p>Lorem Ipsum Sigma Ligma Balls</p>
-  </body>
+      mapDiv.innerHTML = html;
+    }
+
+    function movePlayer(dx, dy) {
+      if(gameOver) return;
+      // Clear old position
+      map[playerY][playerX] = '.';
+      playerX += dx;
+      playerY += dy;
+
+      if(playerX < 0 || playerX >= MAP_SIZE || playerY < 0 || playerY >= MAP_SIZE) {
+        gameOver = true;
+        document.getElementById('message').textContent = 'You fell off the map! Game Over.';
+        renderMap();
+        return;
+      }
+
+      map[playerY][playerX] = 'P';
+      renderMap();
+    }
+
+    function quitGame() {
+      gameOver = true;
+      document.getElementById('message').textContent = 'Thanks for playing!';
+    }
+
+    initializeGame();
+  </script>
+</body>
 </html>
