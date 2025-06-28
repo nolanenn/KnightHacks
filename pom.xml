@@ -3,7 +3,7 @@
   <dependency>
     <groupId>com.google.genai</groupId>
     <artifactId>client</artifactId>
-    <version>latest-version</version> <!-- Replace with actual version -->
+    <version>1.4.1</version> <!-- Replace with actual version -->
   </dependency>
 
   <!-- Guava (for ImmutableList, ImmutableMap) -->
