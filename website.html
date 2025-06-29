@@ -39,6 +39,12 @@
       background-color: #000;
       border-radius: 8px;
     }
+    #attackText {
+      margin-top: 10px;
+      font-size: 18px;
+      color: red;
+      font-weight: bold;
+    }
     .monster-map-container {
       display: flex;
       flex-direction: column;
@@ -51,6 +57,8 @@
   <h1>P(ai)n's Labyrinth</h1>
   <div class="monster-map-container">
     <img id="monsterImg" src="https://openclipart.org/download/280474/monster.svg" width="800" alt="Monster">
+    <p id="message"></p>
+    <button onclick="attack()">Attack</button><br>
     <div id="map"></div>
   </div>
   <div>
@@ -62,7 +70,7 @@
     <button onclick="quitGame()">Q (Quit)</button><br>
     <button id="restartBtn" style="display:none;" onclick="initializeGame()">Play Again</button>
   </div>
-  <p id="message"></p>
+  
   
 
   <script src="game.js"></script>

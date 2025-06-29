@@ -50,17 +50,50 @@ app.post("/generate-image", async (req, res) => {
       contents: prompt,
       config: {
         responseModalities: [Modality.TEXT, Modality.IMAGE],
-      },
+      }, //call the response and then reprompt the ai with the image
     });
+    const textResponse = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: "Please describe what is happening in this image as if you were "
+    + "narrating a combat encounter in a text-based video game",
+    config: {
+      thinkingConfig: {
+        thinkingBudget: 0, // Disables thinking
+      },
+    }
+  });
+  console.log(response.text);
 
     // Find the image part
     const parts = response.candidates[0].content.parts;
     const imagePart = parts.find((part) => part.inlineData && part.inlineData.data);
 
     if (imagePart) {
-      res.json({ image: imagePart.inlineData.data });
+    // Create the image part for the next prompt
+    const imageInput = createImageFromBase64(imagePart.inlineData.data, "image/png");
+
+    // Your text prompt
+    const promptText = "Please describe what is happening in this image as if you were narrating a combat encounter in a text-based video game.";
+
+    // Generate text using the image and prompt
+    const textResponse = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: [
+        createUserContent([
+            imageInput,
+            promptText
+        ])
+        ]
+    });
+
+    // Get the generated text
+    const generatedText = textResponse.candidates[0].content.parts[0].text;
+    console.log(generatedText);
+
+    // Respond with both image and text
+    res.json({ image: imagePart.inlineData.data, description: generatedText });
     } else {
-      res.status(500).json({ error: "No image generated." });
+    res.status(500).json({ error: "No image generated." });
     }
   } catch (error) {
     console.error(error);

@@ -169,6 +169,7 @@ function attack() {
     const ny = playerY + dy;
     if (nx >= 0 && nx < MAP_SIZE && ny >= 0 && ny < MAP_SIZE) {
       if (map[ny][nx] === 'M') {
+        combat();
         map[ny][nx] = '.';
         attacked = true;
         break; // attack only one monster per button press
@@ -177,12 +178,43 @@ function attack() {
   }
 
   if (attacked) {
-    document.getElementById('message').textContent = 'You attacked a monster!';
+    document.getElementById('message').textContent = 'You killed a monster!';
   } else {
     document.getElementById('message').textContent = 'No monsters nearby to attack.';
   }
 
   renderMap();
+}
+
+function combat() {
+  const attackMessages = [
+    "You swing your weapon at the monster!\n",
+    "You strike the monster with a mighty blow!\n",
+    "The monster falls before your fierce attack!\n",
+    "You wound the beast with a swift strike!\n",
+  ];
+
+  const enemyHealth = [
+    25, 50, 75, 100
+  ];
+
+  const enemyStates = [
+    "frail", "weakened", "strong", "invincible"
+  ]
+
+  const indexes = [0, 1, 2, 3];
+  const randomIndex = Math.floor(Math.random() * indexes.length);
+
+  const currHealth = enemyHealth[Math.floor(Math.random() * enemyHealth.length)];
+  const currState = enemyStates[Math.floor(Math.random() * enemyStates.length)];
+  //document.getElementById('message').textContent = 'The monster is ' + currState + ' with ' + currHealth + ' health.';
+
+  while (currHealth > 0) {
+    const attackMessage = attackMessages[Math.floor(Math.random() * attackMessages.length)];
+    document.getElementById('message').textContent = attackMessage + 'The monster is ' + currState + ' with ' + currHealth + ' health remaining.';
+    currHealth -= 25; // Assume each attack reduces health by 25
+  }
+  
 }
 
 function quitGame() {
