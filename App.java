@@ -20,7 +20,7 @@ public class App {
     Gson gson = new Gson();
 
 
-    String model = "gemini-2.5-pro";
+    String model = "gemini-2.5-flash";
     List<Content> contents = ImmutableList.of(
       Content.builder()
         .role("user")

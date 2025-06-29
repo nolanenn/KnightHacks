@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dungeon Crawler Web</title>
+  <title>P(ai)n's Labyrinth</title>
   <style>
     body {
       font-family: monospace;
-      background-color: #1e8999;
+      background-color: #333333;
       color: #eee;
       text-align: center;
       margin-top: 30px;
@@ -15,7 +15,7 @@
       margin: 20px auto;
       line-height: 1.2;
       font-size: 20px;
-      background-color: #0066cc;
+      background-color: #666666;
       padding: 10px;
       border-radius: 8px;
     }
@@ -34,171 +34,37 @@
     }
     #monsterImg {
       margin-top: 10px;
-      display: none;
-      border: 2px solid #fff;
-      background-color: #004080;
+      display: inline-block;
+      border: 2px solid #000;
+      background-color: #000;
       border-radius: 8px;
+    }
+    .monster-map-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>Dungeon Crawler Web</h1>
-  <div id="map"></div>
+  <h1>P(ai)n's Labyrinth</h1>
+  <div class="monster-map-container">
+    <img id="monsterImg" src="https://openclipart.org/download/280474/monster.svg" width="800" alt="Monster">
+    <div id="map"></div>
+  </div>
   <div>
-    <button onclick="movePlayer(0, -1)">W</button><br>
+    <!-- <button onclick="movePlayer(0, -1)">W</button><br>
     <button onclick="movePlayer(-1, 0)">A</button>
     <button onclick="movePlayer(0, 1)">S</button>
     <button onclick="movePlayer(1, 0)">D</button><br>
-    <button onclick="attack()">Attack</button><br>
+    <button onclick="attack()">Attack</button><br> -->
     <button onclick="quitGame()">Q (Quit)</button><br>
     <button id="restartBtn" style="display:none;" onclick="initializeGame()">Play Again</button>
   </div>
   <p id="message"></p>
-  <img id="monsterImg" src="https://openclipart.org/download/280474/monster.svg" width="200" alt="Monster">
+  
 
-  <script>
-    const MAP_SIZE = 10;
-    let map = [];
-    let playerX, playerY;
-    let gameOver = false;
-    let moveCount = 0;
-
-    function initializeGame() {
-      map = [];
-      for(let i=0; i<MAP_SIZE; i++) {
-        map[i] = [];
-        for(let j=0; j<MAP_SIZE; j++) {
-          map[i][j] = '.';
-        }
-      }
-      playerX = Math.floor(Math.random() * MAP_SIZE);
-      playerY = Math.floor(Math.random() * MAP_SIZE);
-      map[playerY][playerX] = 'P';
-      gameOver = false;
-      moveCount = 0;
-      document.getElementById('message').textContent = '';
-      document.getElementById('monsterImg').style.display = 'none';
-      document.getElementById('restartBtn').style.display = 'none';
-      renderMap();
-    }
-
-    function renderMap() {
-      let mapDiv = document.getElementById('map');
-      let html = '';
-      let monsterNearby = false;
-
-      for(let i=0; i<MAP_SIZE; i++) {
-        for(let j=0; j<MAP_SIZE; j++) {
-          if(i === playerY && j === playerX) {
-            html += '<span class="player">P</span> ';
-          } else if(map[i][j] === 'M') {
-            html += '<span class="monster">M</span> ';
-            if (Math.abs(i - playerY) <= 1 && Math.abs(j - playerX) <= 1) {
-              monsterNearby = true;
-            }
-          } else {
-            html += map[i][j] + ' ';
-          }
-        }
-        html += '<br>';
-      }
-
-      mapDiv.innerHTML = html;
-      document.getElementById('monsterImg').style.display = monsterNearby ? 'block' : 'none';
-    }
-
-    function movePlayer(dx, dy) {
-      if(gameOver) return;
-
-      map[playerY][playerX] = '.';
-      playerX += dx;
-      playerY += dy;
-
-      if(playerX < 0 || playerX >= MAP_SIZE || playerY < 0 || playerY >= MAP_SIZE) {
-        gameOver = true;
-        document.getElementById('message').textContent = 'You fell off the map! Game Over.';
-        document.getElementById('restartBtn').style.display = 'inline-block';
-        renderMap();
-        return;
-      }
-
-      if(map[playerY][playerX] === 'M') {
-        gameOver = true;
-        document.getElementById('message').textContent = 'You were eaten by a monster!';
-        document.getElementById('restartBtn').style.display = 'inline-block';
-        renderMap();
-        return;
-      }
-
-      map[playerY][playerX] = 'P';
-      moveCount++;
-
-      if(moveCount % 3 === 0) {
-        spawnMonster();
-      }
-
-      renderMap();
-    }
-
-    function spawnMonster() {
-      let mx, my;
-      let tries = 0;
-      do {
-        mx = Math.floor(Math.random() * MAP_SIZE);
-        my = Math.floor(Math.random() * MAP_SIZE);
-        tries++;
-      } while ((map[my][mx] !== '.' || (mx === playerX && my === playerY)) && tries < 100);
-
-      if (tries < 100) {
-        map[my][mx] = 'M';
-      }
-    }
-
-    // Attack monsters adjacent to player
-    function attack() {
-      if(gameOver) return;
-
-      const directions = [
-        [0, -1],  // up
-        [1, 0],   // right
-        [0, 1],   // down
-        [-1, 0],  // left
-        [-1, -1], // up left
-        [1, -1], // up right
-        [-1, 1], // down left
-        [1, 1], // down right
-      ];
-
-      let attacked = false;
-      for (const [dx, dy] of directions) {
-        const nx = playerX + dx;
-        const ny = playerY + dy;
-        if (nx >= 0 && nx < MAP_SIZE && ny >= 0 && ny < MAP_SIZE) {
-          if (map[ny][nx] === 'M') {
-            map[ny][nx] = '.';
-            attacked = true;
-            break; // attack only one monster per button press
-          }
-        }
-      }
-
-      if (attacked) {
-        document.getElementById('message').textContent = 'You attacked a monster!';
-      } else {
-        document.getElementById('message').textContent = 'No monsters nearby to attack.';
-      }
-
-      renderMap();
-    }
-
-    function quitGame() {
-      gameOver = true;
-      document.getElementById('message').textContent = 'Thanks for playing!';
-      document.getElementById('monsterImg').style.display = 'none';
-      document.getElementById('restartBtn').style.display = 'inline-block';
-    }
-
-    initializeGame();
-  </script>
+  <script src="game.js"></script>
 </body>
 </html>
