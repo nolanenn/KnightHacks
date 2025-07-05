@@ -3,7 +3,8 @@ let map = [];
 let playerX, playerY;
 let gameOver = false;
 let moveCount = 0;
-let health = 100;
+let yourHealth = 100;
+let AC = 13;
 
 async function generateGeminiImage(prompt) {
   const response = await fetch('http://localhost:3000/generate-image', {
@@ -15,6 +16,9 @@ async function generateGeminiImage(prompt) {
   if (data.image) {
     document.getElementById('monsterImg').src = 'data:image/png;base64,' + data.image;
     document.getElementById('monsterImg').style.display = 'block';
+  }
+  if (data.description) {
+    document.getElementById('message').textContent = data.description;
   }
 }
 
@@ -33,8 +37,6 @@ function initializeGame() {
   }
   playerX = 4;
   playerY = 4;
-  // playerX = Math.floor(Math.random() * MAP_SIZE);
-  // playerY = Math.floor(Math.random() * MAP_SIZE);
   map[playerY][playerX] = 'P';
   gameOver = false;
   moveCount = 0;
@@ -68,7 +70,7 @@ function renderMap() {
   mapDiv.innerHTML = html;
 
   if(monsterNearby) {
-    generateGeminiImage("First-Person perspective adventurer's encounter with one or multiple orcs in a dungeon with design inspired by Lord of the Rings");
+    generateGeminiImage("First-Person perspective adventurer's encounter with one or multiple orcs in a dungeon with design inspired by Dungeons and Dragons");
   }
   document.getElementById('monsterImg').style.display = monsterNearby ? 'block' : 'none';
 }
@@ -76,30 +78,43 @@ function renderMap() {
 function movePlayer(dx, dy) {
   if(gameOver) return;
 
-  if(map[playerY + dy][playerX + dx] === 'W') { 
-    
+  // Calculate intended new position (before wrapping)
+  let intendedX = playerX + dx;
+  let intendedY = playerY + dy;
+
+  let newX = (playerX + dx + MAP_SIZE) % MAP_SIZE;
+  let newY = (playerY + dy + MAP_SIZE) % MAP_SIZE;
+
+  if (map[newY][newX] === 'W') {
     return; // Can't move through walls
   }
 
+  // Remove monsters if player wraps around the map
+  if (intendedX < 0 || intendedX >= MAP_SIZE || intendedY < 0 || intendedY >= MAP_SIZE) {
+    removeMonster();
+  }
+
+  // Now update player position
   map[playerY][playerX] = '.';
-  playerX += dx;
-  playerY += dy;
+  playerX = newX;
+  playerY = newY;
+
+  // ...rest of your code...
 
   if(playerX < 0 || playerX >= MAP_SIZE || playerY < 0 || playerY >= MAP_SIZE) {
     removeMonster();
-    if(playerX < 0) {
-      playerX = MAP_SIZE - 1;
-    }
-    if(playerX > 8) {
-      playerX = 0;
-    }
-    if(playerY < 0) {
-      playerY = MAP_SIZE - 1;    
-    }
-    if(playerY > 8) {
-      playerY = 0;
-    }
-    // gameOver = true;
+    // if(playerX < 0) {
+    //   playerX = MAP_SIZE - 1;
+    // }
+    // if(playerX >= MAP_SIZE - 1) {
+    //   playerX = 0;
+    // }
+    // if(playerY < 0) {
+    //   playerY = MAP_SIZE - 1;    
+    // }
+    // if(playerY > MAP_SIZE - 1) {
+    //   playerY = 0;
+    // }
     // document.getElementById('message').textContent = 'You fell off the map! Game Over.';
     // document.getElementById('restartBtn').style.display = 'inline-block';
     renderMap();
@@ -157,10 +172,10 @@ function attack() {
     [1, 0],   // right
     [0, 1],   // down
     [-1, 0],  // left
-    [-1, -1], // up left
-    [1, -1], // up right
-    [-1, 1], // down left
-    [1, 1], // down right
+    // [-1, -1], // up left
+    // [1, -1], // up right
+    // [-1, 1], // down left
+    // [1, 1], // down right
   ];
 
   let attacked = false;
@@ -169,7 +184,7 @@ function attack() {
     const ny = playerY + dy;
     if (nx >= 0 && nx < MAP_SIZE && ny >= 0 && ny < MAP_SIZE) {
       if (map[ny][nx] === 'M') {
-        combat();
+        //combat();
         map[ny][nx] = '.';
         attacked = true;
         break; // attack only one monster per button press
@@ -202,17 +217,25 @@ function combat() {
     "frail", "weakened", "strong", "invincible"
   ]
 
-  const indexes = [0, 1, 2, 3];
-  const randomIndex = Math.floor(Math.random() * indexes.length);
+  const randomIndex = Math.floor(Math.random() * 4);
 
-  const currHealth = enemyHealth[Math.floor(Math.random() * enemyHealth.length)];
+  const crit = false;
+  const attackRoll = Math.floor(Math.random() * 20);
+  const damageRoll = Math.floor(Math.random() * 10);
+  
+
+  const theirHealth = enemyHealth[Math.floor(Math.random() * enemyHealth.length)];
   const currState = enemyStates[Math.floor(Math.random() * enemyStates.length)];
   //document.getElementById('message').textContent = 'The monster is ' + currState + ' with ' + currHealth + ' health.';
 
-  while (currHealth > 0) {
-    const attackMessage = attackMessages[Math.floor(Math.random() * attackMessages.length)];
-    document.getElementById('message').textContent = attackMessage + 'The monster is ' + currState + ' with ' + currHealth + ' health remaining.';
-    currHealth -= 25; // Assume each attack reduces health by 25
+  while (theirHealth > 0) {
+    if(damageRoll > AC) {
+      const attackMessage = attackMessages[Math.floor(Math.random() * attackMessages.length)];
+      document.getElementById('message').textContent = attackMessage + 'The monster is ' + currState + ' with ' + theirHealth + ' health remaining.';
+    }
+    else {
+
+    }
   }
   
 }

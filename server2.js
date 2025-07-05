@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI, Modality, createUserContent, createImageFromBase64 } from "@google/genai";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -35,8 +35,6 @@ const fantasyMonsters = [
   "chimera"
 ];
 
-
-
 app.post("/generate-image", async (req, res) => {
   try {
     const randomIndex = Math.floor(Math.random() * fantasyMonsters.length);
@@ -52,17 +50,17 @@ app.post("/generate-image", async (req, res) => {
         responseModalities: [Modality.TEXT, Modality.IMAGE],
       }, //call the response and then reprompt the ai with the image
     });
-    const textResponse = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: "Please describe what is happening in this image as if you were "
-    + "narrating a combat encounter in a text-based video game",
-    config: {
-      thinkingConfig: {
-        thinkingBudget: 0, // Disables thinking
-      },
-    }
-  });
-  console.log(response.text);
+    // const textResponse = await ai.models.generateContent({
+    //     model: "gemini-2.5-flash",
+    //     contents: "Please describe what is happening in this image as if you were "
+    //     + "narrating a combat encounter in a text-based video game",
+    //     config: {
+    //     thinkingConfig: {
+    //         thinkingBudget: 0, // Disables thinking
+    //     },
+    //     }
+    // });
+    // console.log(response.text);
 
     // Find the image part
     const parts = response.candidates[0].content.parts;
@@ -89,6 +87,9 @@ app.post("/generate-image", async (req, res) => {
     // Get the generated text
     const generatedText = textResponse.candidates[0].content.parts[0].text;
     console.log(generatedText);
+    if (!generatedText) {
+        console.error("No text generated:", textResponse);
+    }
 
     // Respond with both image and text
     res.json({ image: imagePart.inlineData.data, description: generatedText });

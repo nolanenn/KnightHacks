@@ -3,6 +3,11 @@
 <head>
   <title>P(ai)n's Labyrinth</title>
   <style>
+    h1 {
+      font-family: monospace;
+      color: #ffcc00;
+      text-shadow: 2px 2px 4px #000;
+    }
     body {
       font-family: monospace;
       background-color: #333333;
@@ -18,14 +23,16 @@
       background-color: #666666;
       padding: 10px;
       border-radius: 8px;
+      box-shadow: 0 4px 24px 0 #000a, 0 1.5px 8px 0 #2228;
     }
     button {
       margin: 5px;
       padding: 10px 15px;
       font-size: 16px;
+      border-radius: 10px;
     }
     .player {
-      color: pink;
+      color: blue;
       font-weight: bold;
     }
     .monster {
@@ -35,17 +42,12 @@
     #monsterImg {
       margin-top: 10px;
       display: inline-block;
+      align-items: center;
       border: 2px solid #000;
       background-color: #000;
       border-radius: 8px;
     }
-    #attackText {
-      margin-top: 10px;
-      font-size: 18px;
-      color: red;
-      font-weight: bold;
-    }
-    .monster-map-container {
+    .monster-container {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -55,12 +57,13 @@
 </head>
 <body>
   <h1>P(ai)n's Labyrinth</h1>
-  <div class="monster-map-container">
+  <div class="monster-container">
     <img id="monsterImg" src="https://openclipart.org/download/280474/monster.svg" width="800" alt="Monster">
-    <p id="message"></p>
+    
     <button onclick="attack()">Attack</button><br>
     <div id="map"></div>
   </div>
+  <p id="message"></p>
   <div>
     <!-- <button onclick="movePlayer(0, -1)">W</button><br>
     <button onclick="movePlayer(-1, 0)">A</button>
